@@ -5,6 +5,7 @@ import { MongoClient, ObjectId } from "mongodb";
 import dotenv from "dotenv";
 import bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid'; 
+import joi from "joi";
 
 dotenv.config();
 
@@ -17,9 +18,34 @@ let db;
 
 mongoClient.connect().then(() => {
     db = mongoClient.db("mywallet");
+});
+
+const registrationParticipantsSchema = joi.object({
+    name: joi.string().alphanum().required(),
+    email: joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
+    password: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+    confirmPassword: joi.ref('password'),
+});
+
+const loginParticipantsSchema = joi.object({
+    email: joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required(),
+    password: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+});
+
+const entriesAndExitsSchema = joi.object({
+    value: joi.number().required(),
+    description: joi.string().required(),
 })
 
 app.post("/sign-up", async (req,res) => {
+
+    const validation = registrationParticipantsSchema.validate(req.body, { abortEarly: false });
+
+    if (validation.error) {
+        const e = validation.error.details.map(errors => errors.message);
+        res.status(422).send(e);
+        return;
+    }
 
     const {name, email, password, confirmPassword} = req.body;
 
@@ -44,6 +70,14 @@ app.post("/sign-up", async (req,res) => {
 });
 
 app.post("/sign-in", async (req, res) => {
+
+    const validation = loginParticipantsSchema.validate(req.body, { abortEarly: false });
+
+    if (validation.error) {
+        const e = validation.error.details.map(errors => errors.message);
+        res.status(422).send(e);
+        return;
+    }
 
     const { email, password } = req.body;
 
@@ -83,6 +117,14 @@ app.post("/sign-in", async (req, res) => {
 
 app.post("/entry", async (req, res) => {
 
+    const validation = entriesAndExitsSchema.validate(req.body, { abortEarly: false });
+
+    if (validation.error) {
+        const e = validation.error.details.map(errors => errors.message);
+        res.status(422).send(e);
+        return;
+    }
+
     try {
 
         const body = req.body;
@@ -116,6 +158,14 @@ app.get("/entry", async (req, res) => {
 });
 
 app.post("/exit", async (req, res) => {
+
+    const validation = entriesAndExitsSchema.validate(req.body, { abortEarly: false });
+
+    if (validation.error) {
+        const e = validation.error.details.map(errors => errors.message);
+        res.status(422).send(e);
+        return;
+    }
 
     try {
 
