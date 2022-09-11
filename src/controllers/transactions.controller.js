@@ -6,7 +6,7 @@ const transactionsSchema = joi.object({
     description: joi.string().required(),
 });
 
-async function createTransaction (req, res) {
+const create = async (req, res) => {
 
     const validation = transactionsSchema.validate(req.body, { abortEarly: false });
 
@@ -33,7 +33,7 @@ async function createTransaction (req, res) {
 
 }
 
-async function getTransaction (req, res) {
+const list = async (req, res) => {
 
     try {
 
@@ -48,4 +48,4 @@ async function getTransaction (req, res) {
     
 }
 
-export { createTransaction, getTransaction }
+export { create, list }

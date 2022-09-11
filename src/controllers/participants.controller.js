@@ -15,7 +15,7 @@ const loginParticipantsSchema = joi.object({
     password: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
 });
 
-async function registerUser (req,res) {
+const register = async (req, res) => {
 
     const validation = registrationParticipantsSchema.validate(req.body, { abortEarly: false });
 
@@ -47,7 +47,7 @@ async function registerUser (req,res) {
     
 }
 
-async function loginUser (req, res) {
+const login = async (req, res) => {
 
     const validation = loginParticipantsSchema.validate(req.body, { abortEarly: false });
 
@@ -93,4 +93,4 @@ async function loginUser (req, res) {
     
 }
 
-export { registerUser, loginUser };
+export { register, login };
