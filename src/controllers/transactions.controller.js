@@ -1,20 +1,6 @@
-import joi from "joi";
 import db from '../database/db.js';
 
-const transactionsSchema = joi.object({
-    value: joi.number().required(),
-    description: joi.string().required(),
-});
-
 const create = async (req, res) => {
-
-    const validation = transactionsSchema.validate(req.body, { abortEarly: false });
-
-    if (validation.error) {
-        const e = validation.error.details.map(errors => errors.message);
-        res.status(422).send(e);
-        return;
-    }
 
     try {
 
