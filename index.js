@@ -115,6 +115,40 @@ app.get("/entry", async (req, res) => {
     
 });
 
+app.post("/exit", async (req, res) => {
+
+    try {
+
+        const body = req.body;
+
+        await db.collection("money").insertOne({
+            value: body.value,
+            description: body.description
+        });
+
+        res.sendStatus(201);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(422);
+    }
+
+});
+
+app.get("/exit", async (req, res) => {
+
+    try {
+
+        const exits = await db.collection("money").find().toArray();
+
+        res.send(exits);
+
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(422);
+    }
+    
+});
+
 app.listen(5000, () => {
     console.log(chalk.blue("Servidor rodando."));
 });
