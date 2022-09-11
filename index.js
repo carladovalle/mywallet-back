@@ -115,7 +115,7 @@ app.post("/sign-in", async (req, res) => {
     
 });
 
-app.post("/entry", async (req, res) => {
+app.post("/transactions", async (req, res) => {
 
     const validation = entriesAndExitsSchema.validate(req.body, { abortEarly: false });
 
@@ -142,55 +142,13 @@ app.post("/entry", async (req, res) => {
 
 });
 
-app.get("/entry", async (req, res) => {
+app.get("/transactions", async (req, res) => {
 
     try {
 
         const entries = await db.collection("money").find().toArray();
 
         res.send(entries);
-
-    } catch (error) {
-        console.log(error);
-        res.sendStatus(422);
-    }
-    
-});
-
-app.post("/exit", async (req, res) => {
-
-    const validation = entriesAndExitsSchema.validate(req.body, { abortEarly: false });
-
-    if (validation.error) {
-        const e = validation.error.details.map(errors => errors.message);
-        res.status(422).send(e);
-        return;
-    }
-
-    try {
-
-        const body = req.body;
-
-        await db.collection("money").insertOne({
-            value: body.value,
-            description: body.description
-        });
-
-        res.sendStatus(201);
-    } catch (error) {
-        console.log(error);
-        res.sendStatus(422);
-    }
-
-});
-
-app.get("/exit", async (req, res) => {
-
-    try {
-
-        const exits = await db.collection("money").find().toArray();
-
-        res.send(exits);
 
     } catch (error) {
         console.log(error);
