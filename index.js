@@ -73,12 +73,47 @@ app.post("/sign-in", async (req, res) => {
             return res.send(token);
         }
         return res.send(200);
+
     } catch (error) {
         console.error(error);
         return res.send(500);
     }
     
-})
+});
+
+app.post("/entry", async (req, res) => {
+
+    try {
+
+        const body = req.body;
+
+        await db.collection("money").insertOne({
+            value: body.value,
+            description: body.description
+        });
+
+        res.sendStatus(201);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(422);
+    }
+
+});
+
+app.get("/entry", async (req, res) => {
+
+    try {
+
+        const entries = await db.collection("money").find().toArray();
+
+        res.send(entries);
+
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(422);
+    }
+    
+});
 
 app.listen(5000, () => {
     console.log(chalk.blue("Servidor rodando."));
