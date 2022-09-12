@@ -77,7 +77,7 @@ const login = async (req, res) => {
             
             const token = uuid();
 
-            db.collection("users").insertOne({
+            db.collection("sessions").insertOne({
                 token,
                 userId: user._id,
             });
