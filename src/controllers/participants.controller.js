@@ -49,43 +49,33 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
 
-    const validation = loginParticipantsSchema.validate(req.body, { abortEarly: false });
-
-    if (validation.error) {
-        const e = validation.error.details.map(errors => errors.message);
-        res.status(422).send(e);
-        return;
-    }
-
-    const { email, password } = req.body;
-
     try {
 
-        const user = await db.collection("users").findOne({email});
+        const user = req.body;
 
-        if(!user) {
-            return res.status(404).send("Usuário não encontrado");
+        const validation = loginParticipantsSchema.validate(user, { abortEarly: false });
+    
+        if (validation.error) {
+            const e = validation.error.details.map(errors => errors.message);
+            res.status(422).send(e);
+            return;
+        }
+    
+        const checkUser = await db.collection('users').findOne({ email: user.email });
+    
+        if (!checkUser) {
+            return res.status(422);
         }
 
-        const isValid = bcrypt.compareSync(password, user.password);
+        const decryptedPassword = bcrypt.compareSync(user.password, checkUser.password);
 
-        if (!isValid) {
-            return res.status(404).send("Usuário ou senha inválidos.");
-        }
+        if (decryptedPassword) {
 
-        if (user && isValid) {
-            
             const token = uuid();
+            await db.collection('sessions').insertOne({ token, userId: checkUser._id });
 
-            db.collection("sessions").insertOne({
-                token,
-                userId: user._id,
-            });
-
-            return res.send(token);
+            return res.status(200).send({ token, name: checkUser.name });
         }
-        return res.send(200);
-
     } catch (error) {
         console.error(error);
         return res.send(500);
