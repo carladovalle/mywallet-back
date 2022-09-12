@@ -27,11 +27,12 @@ const create = async (req, res) => {
             return res.status(401);
         }
 
-        const { value, description } = req.body;
+        const { value, description, type } = req.body;
 
         await db.collection('transactions').insertOne({
           value,
           description,
+          type,
           userId: user._id,
           createAt: dayjs().format('DD/MM')
         });

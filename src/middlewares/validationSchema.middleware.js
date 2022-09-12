@@ -3,6 +3,7 @@ import joi from "joi";
 const transactionsSchema = joi.object({
     value: joi.number().required(),
     description: joi.string().required(),
+    type: joi.string().valid("entrada", "saida").required(),
 });
 
 async function validation (req, res, next) {
