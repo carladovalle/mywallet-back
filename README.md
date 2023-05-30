@@ -23,13 +23,8 @@ npm i
 ```
 3. Rode o projeto
 ```bash
-npm start
+node index.js
 ```
-4. Você pode, opcionalmente, construir o projeto em execução
-```bash
-npm run build
-```
-5. Acesse http://localhost:3000 no seu navegar favorito
 
 ## 🛠️ Tecnologias
 
